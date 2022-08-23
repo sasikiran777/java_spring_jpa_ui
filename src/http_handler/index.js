@@ -7,8 +7,8 @@ const instance = axios.create({
 });
 
 export const getReq = (url, data) => {
-    let urlParams = null;
-    if (data.length) {
+    let urlParams = "";
+    if (data && data.length) {
         urlParams = '/';
         for (const dataKey in data) {
             urlParams += `&${dataKey}=${data[dataKey]}`;
