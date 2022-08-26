@@ -1,12 +1,27 @@
+import {getReq, postReq} from "../../http_handler";
+import {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+
 export const AddNUpdate = () => {
-    const errorBag = {
-        "name": "",
-        "page_count": "",
-        "isbn": "",
-        "author": ""
-    }
+    let navigation = useNavigate()
+    const [data, setData] = useState({
+        name: '',
+        pageCount: '',
+        isbn: '',
+        author: ""
+    })
+    const [authors, setAuthors] = useState([])
+    useEffect(() => {
+        getReq('author/list').then((response) => {
+            setAuthors(response.data)
+        })
+    }, [])
+
     function formSubmit (e) {
         e.preventDefault()
+        postReq("books/save", data).then((response) => {
+            navigation("/books/list")
+        })
     }
 
     return (<div className="flex place-content-center pt-14 h-auto">
@@ -22,13 +37,17 @@ export const AddNUpdate = () => {
                         className={`appearance-none block w-full 
                         text-gray-700
                         border
-                        ${errorBag.hasOwnProperty('name') ? 'border-red-500': ''}
+                        ${data.name.length === 0 ? 'border-red-500': ''}
                         rounded py-3 px-4 mb-3 
                         leading-tight
                         focus:outline-none 
                         focus:bg-white`}
-                        id="grid-first-name" type="text" placeholder="Rich Dad Poor Dad, etc"/>
-                    {errorBag.hasOwnProperty('name') && <p className="text-red-500 text-xs italic">Please fill out this field.</p>}
+                        id="grid-first-name"
+                        type="text"
+                        value={data.name}
+                        onChange={(e) => setData({...data, name: e.target.value})}
+                        placeholder="Rich Dad Poor Dad, etc"/>
+                    {data.name.length === 0 && <p className="text-red-500 text-xs italic">Name is Required</p>}
                 </div>
                 <div className="w-full md:w-1/2 px-3 ">
                     <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -38,13 +57,16 @@ export const AddNUpdate = () => {
                     <input
                         className={`appearance-none block w-full
                          border
-                         ${errorBag.hasOwnProperty('page_count') ? 'border-red-500': ''}
+                         ${data.pageCount.length === 0 ? 'border-red-500': ''}
                          border-gray-200
                          rounded py-3 px-4 mb-3 
                          leading-tight
                          focus:outline-none focus:bg-white focus:border-gray-500`}
-                        id="grid-last-name" type="text" placeholder="326, 333, etc"/>
-                    {errorBag.hasOwnProperty('page_count') && <p className="text-red-500 text-xs italic">Please fill out this field.</p>}
+                        id="grid-last-name" type="text" placeholder="326, 333, etc"
+                        value={data.pageCount}
+                        onChange={(e) => setData({...data, pageCount: e.target.value})}
+                       />
+                    {data.pageCount.length === 0 && <p className="text-red-500 text-xs italic">Page count required</p>}
                 </div>
             </div>
             <div className="flex flex-wrap -mx-3 mb-2">
@@ -56,14 +78,16 @@ export const AddNUpdate = () => {
                     <input
                         className={`appearance-none block w-full text-gray-700 
                         border 
-                        ${errorBag.hasOwnProperty('page_count') ? 'border-red-500': ''}
+                        ${data.isbn.length === 0 ? 'border-red-500': ''}
                         border-gray-200 
                         rounded
                         py-3 px-4 mb-3
                         leading-tight 
                         focus:outline-none focus:bg-white focus:border-gray-500`}
+                        value={data.isbn}
+                        onChange={(e) => setData({...data, isbn: e.target.value})}
                         id="grid-city" type="text" placeholder="2222-888-00-0"/>
-                    {errorBag.hasOwnProperty('isbn') && <p className="text-red-500 text-xs italic">Please fill out this field.</p>}
+                    {data.isbn.length === 0 && <p className="text-red-500 text-xs italic">ISBN Required.</p>}
                 </div>
                 <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -74,17 +98,20 @@ export const AddNUpdate = () => {
                         <select
                             className={`block appearance-none w-full
                              border
-                             ${errorBag.hasOwnProperty('author') ? 'border-red-500': ''}
+                             ${!data.author ? 'border-red-500': ''}
                              border-gray-200 
                              text-gray-700 
                              py-3 px-4 pr-8 mb-3  
                              rounded 
                              leading-tight 
                              focus:outline-none focus:bg-white focus:border-gray-500`}
+                            value={data.author}
+                            onChange={(e) => setData({...data, author: e.target.value})}
                             id="grid-state">
-                            <option>Sasi</option>
-                            <option>Kiran</option>
-                            <option>Alaparthi</option>
+                            <option value="">Select Author</option>
+                            {authors.map((value, key) => {
+                                return <option value={value.id} key={key}>{value.name}</option>
+                            })}
                         </select>
                         <div
                             className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -94,14 +121,18 @@ export const AddNUpdate = () => {
                             </svg>
                         </div>
                     </div>
-                    {errorBag.hasOwnProperty('author') && <p className="text-red-500 text-xs italic">Please fill out this field.</p>}
+                    {!data.author && <p className="text-red-500 text-xs italic">Please select Author</p>}
                 </div>
                 <div className="w-full h-12 pt-4 mt-2 flex place-content-center">
                     <button className="rounded bg-blue-600 pl-8 pr-8 font-bold text-white
                      disabled:opacity-50
                      disabled:cursor-not-allowed
                      cursor-pointer"
-                     disabled={Object.keys(errorBag).length !== 0}
+                     disabled={
+                        data.name.length === 0 ||
+                        data.isbn.length === 0 ||
+                        data.pageCount.length === 0 ||
+                        !data.author}
                     >
                         Submit
                     </button>

@@ -8,6 +8,8 @@ import {Authors} from "../components/authors";
 import {Users} from "../components/users";
 import {AddNUpdate} from "../components/books/addnupdate";
 import {BooksList} from "../components/books/BooksList";
+import {AuthorList} from "../components/authors/components/list";
+import {CreateNUpdate} from "../components/authors/components/createnupdate";
 
 const AppRoutes = () => {
     return <Routes>
@@ -16,7 +18,10 @@ const AppRoutes = () => {
                 <Route path="create" element={<AddNUpdate />}></Route>
             </Route>
             <Route path="/buyers" element={<Buyers />}></Route>
-            <Route path="/authors" element={<Authors />}></Route>
+            <Route path="/authors" element={<Authors />}>
+                <Route path="list" element={<AuthorList/>}></Route>
+                <Route path="create" element={<CreateNUpdate/>}></Route>
+            </Route>
             <Route path="/users" element={<Users />}></Route>
         </Routes>
 }
