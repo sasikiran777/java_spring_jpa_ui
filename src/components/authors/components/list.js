@@ -66,7 +66,7 @@ export const AuthorList = () => {
                             </td>
 
                             <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                <div className="text-sm font-medium leading-5 text-gray-500">10</div>
+                                <div className="text-sm font-medium leading-5 text-gray-500">{data.noOfBooks}</div>
                             </td>
 
                             <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
